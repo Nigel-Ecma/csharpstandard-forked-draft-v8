@@ -3488,22 +3488,22 @@ When a property declaration includes an `extern` modifier, the property is said 
 
 The modifier `required` indicates the instance member being declared is required to be set during object initialization, which forces the instance creator to provide an initial value for the member in an object initializer at the creation site. (See [§12.8.21](expressions.md#12821-default-value-expressions) and §SetsRequiredMembers for exemptions to this requirement.) A required member shall not be static. A required member shall be at least as accessible as its containing type.
 
-> *Note*: Although a required member declaration may include an initializer (*property_initializer* for a property, *variable_initializer* for a field), ordinarily, that initializer serves no purpose, as the instance creator is required to provide an initial value for that member anyway. However, if a constructor is decorated with the `SetsRequiredMembers` attribute the compiler assumes that member has been initialized correctly, and will not require an explicit initializer by the instance creator, resulting in the member’s initial value being that of its initializer, if one is present. *end note*
+> *Note*: Although a required member declaration may include an initializer (*property_initializer* for a property, *variable_initializer* for a field), ordinarily, that initializer serves no purpose, as the instance creator is required to provide an initial value for that member anyway. However, if a constructor is decorated with `SetsRequiredMembersAttribute` the compiler assumes that member has been initialized correctly, and will not require an explicit initializer by the instance creator, resulting in the member’s initial value being that of its initializer, if one is present. *end note*
 
 A ***required member list*** is a list of all the members of a type that are required. A type automatically inherits this list from its base type.
 To build the required member list `R` for a type `T`, the following steps are used:
 
 1. For every type `Tb`, starting with `T` and working through the base type chain until `object` is reached.
-1. If `Tb` is decorated with the `RequiredMember` attribute (§RequiredMember), then all members of `Tb` marked with that attribute are gathered into `Rb`
+1. If `Tb` is decorated with `RequiredMemberAttribute` (§RequiredMember), then all members of `Tb` marked with that attribute are gathered into `Rb`
 
     1. For every `Ri` in `Rb`, if `Ri` is overridden by any member of `R`, it is skipped.
-    1. Otherwise, if any `Ri` is hidden by a member of `R`, then the lookup of required members fails, and no further steps are taken. Calling any constructor of `T` not decorated with the `SetsRequiredMembers` is an error.
+    1. Otherwise, if any `Ri` is hidden by a member of `R`, then the lookup of required members fails, and no further steps are taken. Calling any constructor of `T` not decorated with `SetsRequiredMembersAttribute` is an error.
     1. Otherwise, `Ri` is added to `R`.
 
 A required member shall be treated as if it were decorated with the attribute `System.Runtime.CompilerServices.RequiredMemberAttribute` (§RequiredMember).
-With regard to nullable reference type analysis ([§8.9](types.md#89-reference-types-and-nullability)), a required member need not be initialized to a valid nullable state when any of its instance constructors returns. Any required member in a type and its base types is considered by nullable analysis to have its default value at the beginning of any instance constructor in that type, unless it chains to a `this` or `base` constructor that is decorated with the `SetsRequiredMembersAttribute` attribute.
+With regard to nullable reference type analysis ([§8.9](types.md#89-reference-types-and-nullability)), a required member need not be initialized to a valid nullable state when any of its instance constructors returns. Any required member in a type and its base types is considered by nullable analysis to have its default value at the beginning of any instance constructor in that type, unless it chains to a `this` or `base` constructor that is decorated with `SetsRequiredMembersAttribute`.
 
-Nullable analysis shall warn about all required members from the current and base types that do not have a valid nullable state at the end of a constructor decorated with the `SetsRequiredMembersAttribute` attribute.
+Nullable analysis shall warn about all required members from the current and base types that do not have a valid nullable state at the end of a constructor decorated with `SetsRequiredMembersAttribute`.
 
 ### 15.7.2 Static and instance properties
 
@@ -5284,13 +5284,13 @@ Each of the types referenced in the *parameter_list* of an instance constructor 
 The optional *constructor_initializer* specifies another instance constructor to invoke before executing the statements given in the *constructor_body* of this instance constructor. This is described further in [§15.11.2](classes.md#15112-constructor-initializers).
 
 All instance constructors on a type that has a required member list ([§15.7.1](classes.md#1571-general)) automatically advertise a contract that consumers of the type shall initialize all of the members in the list. It is an error for an instance constructor to advertise a contract that requires a member that is not at least as accessible as the constructor itself.
-An instance constructor whose *constructor_initializer* chains to another constructor decorated with the `SetsRequiredMembers` attribute (§SetsRequiredMembers), shall also be decorated with that attribute.
-For every instance constructor `Ci` in type `T` with required members `R`, unless `Ci` is decorated with the attribute `SetsRequiredMembers`, consumers calling `Ci` shall do one of the following:
+An instance constructor whose *constructor_initializer* chains to another constructor decorated with `SetsRequiredMembersAttribute` (§SetsRequiredMembers), shall also be decorated with that attribute.
+For every instance constructor `Ci` in type `T` with required members `R`, unless `Ci` is decorated with `SetsRequiredMembersAttribute`, consumers calling `Ci` shall do one of the following:
 
 - Set all members of `R` in an *object_initializer* on the *object_creation_expression*,
 - Or set all members of `R` via the *named_argument_list* of an *attribute*.
 
-If the current context does not permit an *object_initializer* or is not an *attribute* with *named_argument_list*, and `Ci` is not decorated with `SetsRequiredMembers`, then it is an error to call `Ci`.
+If the current context does not permit an *object_initializer* or is not an *attribute* with *named_argument_list*, and `Ci` is not decorated with `SetsRequiredMembersAttribute`, then it is an error to call `Ci`.
 
 When a constructor declaration includes an `extern` modifier, the constructor is said to be an ***external constructor***. Because an external constructor declaration provides no actual implementation, its *constructor_body* consists of a semicolon. For all other constructors, the *constructor_body* consists of either
 
@@ -5562,7 +5562,7 @@ A ***copy constructor*** for a type `T` is a constructor having a single paramet
 
 In certain circumstances ([§15.16.3](classes.md#15163-copy-and-clone-members)), a copy constructor may be synthesized by the compiler, and called by synthesized code.
 
-A copy constructor on a type that has a required member list ([§15.7.1](classes.md#1571-general)) shall be decorated with the `SetsRequiredMembers` attribute (§SetsRequiredMembers).
+A copy constructor on a type that has a required member list ([§15.7.1](classes.md#1571-general)) shall be decorated with `SetsRequiredMembersAttribute` (§SetsRequiredMembers).
 
 ## 15.12 Static constructors
 
